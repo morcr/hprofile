@@ -47,7 +47,7 @@ jobs:
          SONAR_HOST_URL: ${{ secrets.SONAR_URL }} #OPTIONAL
 
   BUILD_AND_PUBLISH:
-    #    needs: Testing
+    needs: Testing
     runs-on: ubuntu-latest
     steps:
       - name: code checkout
@@ -61,7 +61,7 @@ jobs:
       - name: upload image to ECR
         uses: appleboy/docker-ecr-action@master
         with:
-          access_key: AKIAZI2LI26NN3NCBI3D
+          access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           registry: ${{ secrets.REGISTRY }}
           repo: actapp
