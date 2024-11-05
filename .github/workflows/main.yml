@@ -52,21 +52,30 @@ jobs:
     steps:
       - name: code checkout
         uses: actions/checkout@v4
+          
       - name: update application.properties file
         run: |
           sed -i "s/^jdbc.username.*$/jdbc.username\=${{ secrets.RDS_USER }}/" src/main/resources/application.properties
           sed -i "s/^jdbc.password.*$/jdbc.password\=${{ secrets.RDS_PASS }}/" src/main/resources/application.properties
           sed -i "s/db01/${{ secrets.RDS_ENDPOINT }}/" src/main/resources/application.properties
 
-      - name: upload image to ECR
-        uses: appleboy/docker-ecr-action@master
-        with:
-          access_key: ${{ secrets.aws_access_key_id }}
-          secret_key: ${{ secrets.aws_secret_access_key }}
-          registry: ${{ secrets.registry }}
-          repo: actapp
-          region: ${{ env.aws_region }}
-          tags: latest,${{ github.run_number }}
-          daemon_off: false
-          dockerfile: ./Dockerfile
-          context: ./
+      - name: ecr-publish
+        uses: bitovi/github-actions-ecr-publish@v0.1.0
+          with:
+            aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws_default_region: us-east-1
+            aws_ecr_repo_name: hello-repo
+
+      # - name: upload image to ECR
+      #   uses: appleboy/docker-ecr-action@master
+      #   with:
+      #     access_key: ${{ secrets.aws_access_key_id }}
+      #     secret_key: ${{ secrets.aws_secret_access_key }}
+      #     registry: ${{ secrets.registry }}
+      #     repo: actapp
+      #     region: ${{ env.aws_region }}
+      #     tags: latest,${{ github.run_number }}
+      #     daemon_off: false
+      #     dockerfile: ./Dockerfile
+      #     context: ./
